@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hours Tracker - Login</title>
+    <link rel="stylesheet" href="/auth-styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Login Form -->
+        <div id="login-form" class="auth-form active">
+            <div class="auth-header">
+                <h1>Hours Tracker</h1>
+                <p>Track your work hours securely</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="login-email">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="login-email" 
+                        name="email" 
+                        placeholder="your@email.com"
+                        required
+                        autocomplete="email"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input 
+                        type="password" 
+                        id="login-password" 
+                        name="password" 
+                        placeholder="••••••••"
+                        required
+                        autocomplete="password"
+                    >
+                </div>
+                
+                <div id="login-error" class="error-message"></div>
+                <div id="login-success" class="success-message"></div>
+                
+                <button type="submit" id="login-submit" class="btn-primary">
+                    <span>Sign In</span>
+                    <span class="spinner" style="display: none;"></span>
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Don't have an account? <button type="button" id="toggle-register" class="link-btn">Create one</button></p>
+            </div>
+        </div>
+        
+        <!-- Register Form -->
+        <div id="register-form" class="auth-form">
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Join Hours Tracker</p>
+            </div>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="register-email">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="register-email" 
+                        name="email" 
+                        placeholder="your@email.com"
+                        required
+                        autocomplete="email"
+                    >
+                    <small>We'll never share your email</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-username">Username</label>
+                    <input 
+                        type="text" 
+                        id="register-username" 
+                        name="username" 
+                        placeholder="john_doe"
+                        required
+                        autocomplete="username"
+                        pattern="[a-zA-Z0-9_-]{3,20}"
+                    >
+                    <small>3-20 characters, letters, numbers, dash, underscore</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input 
+                        type="password" 
+                        id="register-password" 
+                        name="password" 
+                        placeholder="••••••••"
+                        required
+                        autocomplete="new-password"
+                    >
+                    <small>Min 8 chars: uppercase, lowercase, number</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password-confirm">Confirm Password</label>
+                    <input 
+                        type="password" 
+                        id="register-password-confirm" 
+                        name="passwordConfirm" 
+                        placeholder="••••••••"
+                        required
+                        autocomplete="new-password"
+                    >
+                </div>
+                
+                <div id="register-error" class="error-message"></div>
+                <div id="register-success" class="success-message"></div>
+                
+                <button type="submit" id="register-submit" class="btn-primary">
+                    <span>Create Account</span>
+                    <span class="spinner" style="display: none;"></span>
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Already have an account? <button type="button" id="toggle-login" class="link-btn">Sign in</button></p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/auth.js"></script>
+</body>
+</html>
