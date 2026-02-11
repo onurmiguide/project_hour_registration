@@ -136,7 +136,7 @@ async function handleRegister(e) {
   }
   
   // Username validation
-  const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
+  const usernameRegex = /^[a-zA-Z0-9_\-]{3,20}$/;
   if (!usernameRegex.test(username)) {
     errorDiv.innerHTML = 'Username: 3-20 chars, alphanumeric/dash/underscore only';
     return;
