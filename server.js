@@ -329,11 +329,13 @@ app.delete('/api/data', authenticateToken, async (req, res) => {
   }
 });
 
-// Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  console.log('JWT_SECRET:', JWT_SECRET === 'your-secret-key-change-in-production-12345' ? '⚠️ DEFAULT (change in production)' : '✓ Set from environment');
-});
+// Start local server only (Vercel uses serverless handler export)
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log('JWT_SECRET:', JWT_SECRET === 'your-secret-key-change-in-production-12345' ? 'DEFAULT (change in production)' : 'Set from environment');
+  });
+}
 
 export default app;
