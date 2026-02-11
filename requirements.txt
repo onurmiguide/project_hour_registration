@@ -1,0 +1,311 @@
+# =============================================================================
+# Hours Tracker - Requirements & Installation Guide
+# =============================================================================
+# 
+# SYSTEM REQUIREMENTS:
+# - Windows 10/11 (or macOS/Linux)
+# - Python 3.8 or higher (https://www.python.org/downloads/)
+# - Visual Studio Code (already installed)
+# - Internet connection (for CDN libraries and API calls)
+# 
+# INSTALLATION STEPS:
+# =============================================================================
+#
+# STEP 1: Install Python (if not already installed)
+# -----------
+# 1. Download Python from https://www.python.org/downloads/
+# 2. Run the installer
+# 3. IMPORTANT: Check "Add Python to PATH" during installation
+# 4. Click "Install Now"
+# 5. Verify installation by opening PowerShell and running:
+#    python --version
+#
+# STEP 2: Set up the project folder
+# --------
+# 1. Navigate to your project folder in PowerShell:
+#    cd "c:\Users\OnurYilmaz\Desktop\stage miguide\hour registration\hour-tracker"
+#
+# STEP 3: Create a Python Virtual Environment (RECOMMENDED)
+# -----------
+# This keeps project dependencies isolated from your system
+# 
+# In PowerShell, run:
+#    python -m venv venv
+# 
+# Activate the virtual environment:
+#    .\venv\Scripts\Activate.ps1
+# 
+# If you get an execution policy error, run:
+#    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+#
+# STEP 4: Install Required Packages
+# ---
+# With virtual environment activated, run:
+#    pip install -r requirements.txt
+#
+# STEP 5: Run the Application
+# --
+# Still in PowerShell with venv activated:
+#    python app.py
+#
+# Then open your browser and go to:
+#    http://localhost:5000
+#
+# STEP 6: Stop the Server
+# --
+# Press Ctrl+C in PowerShell
+#
+# =============================================================================
+# TROUBLESHOOTING
+# =============================================================================
+#
+# Problem: "python is not recognized"
+# Solution: Restart PowerShell or add Python to PATH 
+#           (may need to reinstall Python with "Add to PATH" checked)
+#
+# Problem: "pip is not recognized"
+# Solution: Try using "python -m pip install -r requirements.txt" instead
+#
+# Problem: "permission denied" when activating venv
+# Solution: Run PowerShell as Administrator or change execution policy
+#
+# Problem: Port 5000 already in use
+# Solution: Change port in app.py or stop other processes using port 5000
+#
+# Problem: IndexedDB not working or files not saving
+# Solution: Make sure you're using a modern browser (Chrome/Firefox)
+#           Close all other tabs with the same localhost:5000 address
+#
+# =============================================================================
+# PYTHON DEPENDENCIES
+# =============================================================================
+
+# Web Framework & Core Dependencies
+Flask==2.3.3
+Werkzeug==2.3.7
+
+# Flask automatically includes these (no need to install separately):
+# - click (CLI utilities)
+# - itsdangerous (cryptographic signing for sessions)
+# - Jinja2 (template engine)
+# - MarkupSafe (safe string handling)
+
+# =============================================================================
+# FRONTEND LIBRARIES (Loaded via CDN - No installation needed)
+# =============================================================================
+# These are automatically loaded in index.html from CDN servers:
+#
+# - PDF.js 3.11.174              (PDF viewing)
+#   URL: https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js
+#
+# - SheetJS 0.18.5               (Excel file viewing)
+#   URL: https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js
+#
+# - Mammoth.js 1.6.0             (Word document viewing)
+#   URL: https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js
+#
+# - docx-preview 0.1.43          (Word document preview fallback)
+#   URL: https://cdnjs.cloudflare.com/ajax/libs/docx-preview/0.1.43/docx-preview.min.js
+#
+# No manual installation needed - they load automatically from the web
+#
+# =============================================================================
+# OPTIONAL: Development & Testing
+# =============================================================================
+# Uncomment below if you want development tools (not required for running):
+#
+# python-dotenv==1.0.0           # Load environment variables from .env file
+# pytest==7.4.0                  # Testing framework
+# black==23.7.0                  # Code formatter
+# flake8==6.0.0                  # Code linter
+#
+# To install optional packages:
+#    pip install python-dotenv pytest black flake8
+#
+# =============================================================================
+# BROWSER REQUIREMENTS
+# =============================================================================
+# For the application to work properly, you need:
+#
+# - Modern web browser (Chrome, Firefox, Edge, Safari)
+# - JavaScript enabled
+# - IndexedDB support (all modern browsers support this)
+# - Cookies/Local Storage enabled
+# - At least 50MB free storage space for file uploads
+#
+# Recommended: Google Chrome or Mozilla Firefox (latest versions)
+#
+# Browser storage breakdown:
+# - localStorage: 5-10MB (used for file metadata)
+# - IndexedDB: 50MB+ (used for file blobs)
+# - Total available: 50MB+ per domain
+#
+# =============================================================================
+# API REQUIREMENTS
+# =============================================================================
+# The application uses the following free APIs (no authentication needed):
+#
+# Open-Meteo API
+# - Purpose: Weather data for Rotterdam
+# - No API key required
+# - Rate limit: 10,000 calls/day (free tier)
+# - URL: https://api.open-meteo.com/v1/forecast
+#
+# =============================================================================
+# PROJECT STRUCTURE
+# =============================================================================
+#
+# hour-tracker/
+#  app.py                          (Main Flask application)
+#  requirements.txt                (This file - Python dependencies)
+#  venv/                           (Virtual environment folder - created during setup)
+#  templates/
+#     index.html                  (Main HTML page with modals and UI)
+#  static/
+#     styles.css                  (All styling - iOS-themed)
+#     app.js                      (All JavaScript functionality)
+#     (images, fonts loaded from CDN)
+#  README.md                       (Project documentation)
+#  INDEXEDDB_MIGRATION.md          (Storage architecture documentation)
+#
+# =============================================================================
+# FEATURES OVERVIEW
+# =============================================================================
+#
+# Hours Tracker:
+# - Track internship hours (goal: 640 hours)
+# - Calendar view with session logging
+# - Progress ring showing completion percentage
+# - Weather information (Rotterdam)
+# - Date/time display
+#
+# Bestanden BIM (File Manager):
+# - Upload and organize files in folders
+# - Support for PDF, Word, Excel, images, text
+# - File preview functionality
+# - Download files to your computer
+# - Right-click context menu
+# - Drag-and-drop file operations
+# - Folder hierarchy with breadcrumb navigation
+# - File storage up to 50MB using IndexedDB
+#
+# =============================================================================
+# QUICK START SUMMARY
+# =============================================================================
+#
+# For first-time setup:
+# 1. Install Python 3.8+ from https://www.python.org/downloads/
+#    (Check "Add Python to PATH" checkbox)
+#
+# 2. Open PowerShell and navigate to project folder:
+#    cd "c:\Users\OnurYilmaz\Desktop\stage miguide\hour registration\hour-tracker"
+#
+# 3. Create virtual environment:
+#    python -m venv venv
+#
+# 4. Activate virtual environment:
+#    .\venv\Scripts\Activate.ps1
+#
+# 5. Install dependencies:
+#    pip install -r requirements.txt
+#
+# 6. Run the application:
+#    python app.py
+#
+# 7. Open in browser:
+#    http://localhost:5000
+#
+# 8. Stop the server:
+#    Press Ctrl+C in PowerShell
+#
+# For subsequent sessions:
+# 1. Open PowerShell in project folder
+# 2. Run: .\venv\Scripts\Activate.ps1
+# 3. Run: python app.py
+# 4. Open: http://localhost:5000
+#
+# =============================================================================
+# DEPENDENCIES EXPLANATION
+# =============================================================================
+#
+# Flask 2.3.3
+#   - Web application framework
+#   - Serves HTML, CSS, JavaScript
+#   - Handles HTTP requests
+#
+# Werkzeug 2.3.7
+#   - WSGI utility library (required by Flask)
+#   - Handles routing, request/response handling
+#   - Provides development server
+#
+# Both are installed together and managed by Flask
+#
+# =============================================================================
+# FILE UPLOAD STORAGE
+# =============================================================================
+#
+# Files are stored locally in the browser using:
+#
+# 1. localStorage (5-10MB)
+#    - Stores file metadata (name, size, type, date, folder)
+#    - Cannot store binary data directly
+#    - Synchronous access
+#
+# 2. IndexedDB (50MB+)
+#    - Stores actual file Blobs
+#    - Asynchronous access
+#    - Can store large files
+#    - Per-domain quota
+#
+# Note: This is NOT a server-side storage solution
+# Files are stored only in your browser's local storage
+# Clearing browser data will delete all uploaded files
+#
+# To add server-side storage in the future:
+# - Add backend file storage (e.g., Flask endpoint to save files)
+# - Use SQLite or other database
+# - May need to modify app.py
+#
+# =============================================================================
+# PERFORMANCE NOTES
+# =============================================================================
+#
+# - First load: May take a few seconds (CDN libraries loading)
+# - File preview: Depends on file size and type
+# - Large files (50MB+): May be slow in browser
+# - Recommended file sizes: Under 20MB for best performance
+#
+# =============================================================================
+# SECURITY NOTES
+# =============================================================================
+#
+# - This is a local application (localhost only)
+# - No user authentication required
+# - Files stored in browser, not on server
+# - No data sent to remote servers (except weather API and CDN)
+# - Built-in XSS protection with JavaScript templating
+#
+# =============================================================================
+# ADDITIONAL RESOURCES
+# =============================================================================
+#
+# Python:
+# - Official: https://www.python.org/
+# - Pip documentation: https://pip.pypa.io/
+# - Virtual environments: https://python.readthedocs.io/en/stable/library/venv.html
+#
+# Flask:
+# - Official: https://flask.palletsprojects.com/
+# - Tutorials: https://flask.palletsprojects.com/tutorial/
+#
+# Frontend Libraries:
+# - PDF.js: https://mozilla.github.io/pdf.js/
+# - SheetJS: https://sheetjs.com/
+# - Mammoth: https://github.com/mwilliamson/mammoth.js
+#
+# Browser APIs:
+# - IndexedDB: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
+# - localStorage: https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
+# - Fetch API: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+#
+# =============================================================================

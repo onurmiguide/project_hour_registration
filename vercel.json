@@ -1,0 +1,20 @@
+{
+  "buildCommand": "npm install",
+  "devCommand": "node server.js",
+  "installCommand": "npm install",
+  "framework": "express",
+  "env": {
+    "KV_URL": {
+      "description": "Vercel KV Redis URL"
+    },
+    "KV_REST_API_URL": {
+      "description": "Vercel KV REST API URL"
+    },
+    "KV_REST_API_TOKEN": {
+      "description": "Vercel KV REST API Token"
+    },
+    "KV_REST_API_READ_ONLY_TOKEN": {
+      "description": "Vercel KV REST API Read-Only Token"
+    }
+  }
+}

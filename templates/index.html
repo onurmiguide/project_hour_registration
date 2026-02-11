@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hours Tracker</title>
+    <link rel="stylesheet" href="/styles.css">
+    <!-- PDF Viewer -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Excel Viewer (SheetJS) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Word Document Viewer (Mammoth.js) - More reliable for Word preview -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <!-- Fallback: Docx-preview (if above fails) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx-preview/0.1.43/docx-preview.min.js" async defer></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="school-links">
+                        <a href="https://brightspace.hr.nl/d2l/home" target="_blank" class="school-link" title="Go to Brightspace HR">
+                            <span class="school-link-icon">🎓</span>
+                            <span class="school-link-text">Brightspace</span>
+                        </a>
+                        <a href="https://mijn.hr.nl/" target="_blank" class="school-link" title="Go to Mijn HR">
+                            <span class="school-link-icon">👤</span>
+                            <span class="school-link-text">Mijn HR</span>
+                        </a>
+                    </div>
+                    <div class="header-title-section">
+                        <h1 class="title">Hours Tracker</h1>
+                        <p class="subtitle">Internship Hours</p>
+                    </div>
+                </div>
+                <div class="header-middle">
+                    <nav class="nav-buttons">
+                        <button class="nav-btn-primary active" onclick="showPage('hours')" id="navHours">Hours Tracker</button>
+                        <button class="nav-btn-primary" onclick="showPage('bestanden')" id="navBestanden">Bestanden BIM</button>
+                    </nav>
+                </div>
+                <div class="header-right">
+                    <div class="user-profile">
+                        <div class="user-info">
+                            <p class="user-label">Logged in as</p>
+                            <p class="username" id="usernameDisplay">User</p>
+                        </div>
+                        <button class="logout-btn" id="logoutBtn" title="Sign out">
+                            <span class="logout-icon">🚪</span>
+                        </button>
+                    </div>
+                    <div class="datetime-info">
+                        <p id="currentDay" class="current-day">Friday</p>
+                        <p id="currentTime" class="current-time">12:00</p>
+                    </div>
+                    <div class="weather-info">
+                        <div class="location">
+                            <span class="location-icon">📍</span>
+                            <span class="location-name">Rotterdam</span>
+                        </div>
+                        <div class="weather-details">
+                            <span id="weatherIcon" class="weather-icon">🌤️</span>
+                            <div class="weather-text">
+                                <p id="weatherDesc" class="weather-description">Partly cloudy</p>
+                                <p id="weatherTemp" class="weather-temperature">18°C</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hours Tracker Page -->
+        <div id="hoursPage" class="page">
+        <!-- Progress Section -->
+        <section class="progress-section">
+            <div class="progress-card">
+                <div class="progress-ring-container">
+                    <svg class="progress-ring" width="120" height="120">
+                        <circle class="progress-ring-bg" cx="60" cy="60" r="50"></circle>
+                        <circle class="progress-ring-fill" id="progressRing" cx="60" cy="60" r="50" style="stroke-dashoffset: 314;"></circle>
+                    </svg>
+                    <div class="progress-text">
+                        <span class="progress-hours" id="totalHours">0.0</span>
+                        <span class="progress-label">/ 640 hrs</span>
+                    </div>
+                </div>
+                <div class="progress-stats">
+                    <p class="stat-row">
+                        <span class="stat-label">Remaining:</span>
+                        <span class="stat-value" id="remainingHours">640.0</span> <span class="stat-unit">hrs</span>
+                    </p>
+                    <p class="stat-row">
+                        <span class="stat-label">Progress:</span>
+                        <span class="stat-value" id="progressPercent">0%</span>
+                    </p>
+                    <p class="stat-row stat-small">
+                        <span class="stat-label">Last updated:</span>
+                        <span class="stat-value" id="lastUpdated">Never</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Add Buttons -->
+        <section class="quick-add-section">
+            <button class="btn btn-full-day" onclick="addQuickSession(8, 'Full Day')">
+                <span class="btn-icon">+</span> Full Day (8h)
+            </button>
+            <button class="btn btn-half-day" onclick="addQuickSession(4, 'Half Day')">
+                <span class="btn-icon">+</span> Half Day (4h)
+            </button>
+        </section>
+
+        <!-- Month/Year Selector -->
+        <section class="calendar-header">
+            <button id="prevMonth" class="nav-btn">&larr;</button>
+            <h2 id="monthYear" class="month-year"></h2>
+            <button id="nextMonth" class="nav-btn">&rarr;</button>
+        </section>
+
+        <!-- Calendar Grid -->
+        <section class="calendar-section">
+            <div class="calendar">
+                <div class="weekdays">
+                    <div class="weekday">Mo</div>
+                    <div class="weekday">Tu</div>
+                    <div class="weekday">We</div>
+                    <div class="weekday">Th</div>
+                    <div class="weekday">Fr</div>
+                    <div class="weekday">Sa</div>
+                    <div class="weekday">Su</div>
+                </div>
+                <div id="calendarDays" class="days"></div>
+            </div>
+        </section>
+
+        <!-- Day Detail Panel -->
+        <div id="dayPanel" class="modal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="dayPanelTitle">Select a Day</h2>
+                    <button class="close-btn" onclick="closeDayPanel()">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Day Sessions List -->
+                    <div id="daySessionsList" class="sessions-list"></div>
+
+                    <!-- Day Total -->
+                    <div class="day-total">
+                        <span>Total Today:</span>
+                        <span id="dayTotal" class="day-total-hours">0.0 hrs</span>
+                    </div>
+
+                    <!-- Add Session Form -->
+                    <form id="sessionForm" class="session-form" onsubmit="saveSession(event)">
+                        <fieldset>
+                            <legend>Add Work Session</legend>
+
+                            <div class="form-group">
+                                <label for="sessionDate">Date</label>
+                                <input type="date" id="sessionDate" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="startTime">Start Time</label>
+                                    <input type="time" id="startTime" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="endTime">End Time</label>
+                                    <input type="time" id="endTime" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="breakMinutes">Break (min)</label>
+                                    <input type="number" id="breakMinutes" min="0" max="480" value="30" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="category">Category</label>
+                                    <select id="category">
+                                        <option value="Internship">Internship</option>
+                                        <option value="School">School</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="note">Note (optional)</label>
+                                <textarea id="note" placeholder="e.g., Dentist appointment"></textarea>
+                            </div>
+
+                            <div class="form-preview">
+                                <p>Net Hours: <strong id="netHoursPreview">0.0</strong></p>
+                            </div>
+
+                            <div class="form-buttons">
+                                <button type="submit" class="btn btn-save">Save Session</button>
+                                <button type="button" class="btn btn-cancel" onclick="closeDayPanel()">Cancel</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Editor Modal -->
+        <div id="editModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit Session</h2>
+                    <button class="close-btn" onclick="closeEditModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm" class="session-form" onsubmit="updateSession(event)">
+                        <div class="form-group">
+                            <label for="editDate">Date</label>
+                            <input type="date" id="editDate" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editStartTime">Start Time</label>
+                                <input type="time" id="editStartTime" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editEndTime">End Time</label>
+                                <input type="time" id="editEndTime" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editBreakMinutes">Break (min)</label>
+                                <input type="number" id="editBreakMinutes" min="0" max="480" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editCategory">Category</label>
+                                <select id="editCategory">
+                                    <option value="Internship">Internship</option>
+                                    <option value="School">School</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editNote">Note</label>
+                            <textarea id="editNote"></textarea>
+                        </div>
+                        <div class="form-preview">
+                            <p>Net Hours: <strong id="editNetHours">0.0</strong></p>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="btn btn-save">Update Session</button>
+                            <button type="button" class="btn btn-delete" onclick="deleteCurrentSession()">Delete</button>
+                            <button type="button" class="btn btn-cancel" onclick="closeEditModal()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Management Section -->
+        <section class="data-management">
+            <h3>Data Management</h3>
+            <div class="data-buttons">
+                <button class="btn btn-secondary" onclick="exportJSON()">Export JSON</button>
+                <button class="btn btn-secondary" onclick="importJSON()">Import JSON</button>
+                <button class="btn btn-secondary" onclick="exportCSV()">Export CSV</button>
+                <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+            </div>
+        </section>
+        </div>
+
+        <!-- Bestanden BIM Page -->
+        <div id="bestandenPage" class="page" style="display:none;">
+            <section class="bestanden-section">
+                <div class="bestanden-header">
+                    <div>
+                        <h2>Bestanden BIM</h2>
+                        <div id="breadcrumb" class="breadcrumb"></div>
+                    </div>
+                    <div class="bestanden-actions">
+                        <input type="file" id="fileInput" multiple onchange="handleFileSelect(event)" hidden accept=".pdf,.docx,.xlsx,.xls,.doc,.txt,.pptx,.jpg,.png,.gif">
+                        <button class="btn btn-secondary" onclick="createFolderPrompt()">📁 New Folder</button>
+                        <button class="btn btn-secondary" onclick="moveToSelected()" id="moveBtn" style="display:none;">📂 Move Selected</button>
+                        <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">📤 Upload Files</button>
+                    </div>
+                </div>
+
+                <div class="file-manager" ondrop="handleDropOnManager(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+
+                    <!-- File list with details -->
+                    <div class="files-container">
+                        <div class="files-header">
+                            <div class="col-checkbox"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></div>
+                            <div class="col-name">Name</div>
+                            <div class="col-size">Size</div>
+                            <div class="col-date">Uploaded</div>
+                            <div class="col-actions">Actions</div>
+                        </div>
+                        <div id="filesList" class="files-list">
+                            <div class="no-files">
+                                <span class="empty-icon">📂</span>
+                                <p>No files uploaded yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Create Folder Modal -->
+        <div id="createFolderModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Create New Folder</h2>
+                    <button class="close-btn" onclick="document.getElementById('createFolderModal').style.display='none'">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="folderNameInput" placeholder="Folder name" class="folder-input" onkeyup="if(event.key==='Enter') createFolder()">
+                    <div style="display: flex; gap: 12px; margin-top: 16px;">
+                        <button class="btn btn-save" onclick="createFolder()">Create</button>
+                        <button class="btn btn-cancel" onclick="document.getElementById('createFolderModal').style.display='none'">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Move to Folder Modal -->
+        <div id="moveFolderModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Move Selected Items</h2>
+                    <button class="close-btn" onclick="document.getElementById('moveFolderModal').style.display='none'">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Select destination folder:</p>
+                    <div id="folderOptions" class="folder-options"></div>
+                    <div style="display: flex; gap: 12px; margin-top: 16px;">
+                        <button class="btn btn-save" id="moveBtn" onclick="confirmMove()">Move</button>
+                        <button class="btn btn-cancel" onclick="document.getElementById('moveFolderModal').style.display='none'">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Preview Modal -->
+        <div id="previewModal" class="modal" style="display:none;">
+            <div class="preview-content">
+                <div class="preview-header">
+                    <h2 id="previewTitle">Preview</h2>
+                    <button class="close-btn" onclick="closePreview()">&times;</button>
+                </div>
+                <div class="preview-body">
+                    <div id="previewContainer" class="preview-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>
