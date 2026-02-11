@@ -45,6 +45,28 @@ function validatePassword(password) {
          /[0-9]/.test(password);
 }
 
+function isStorageConfigError(error) {
+  const message = String(error?.message || '').toLowerCase();
+  return (
+    message.includes('missing required environment variables') ||
+    message.includes('kv_rest_api_url') ||
+    message.includes('kv_rest_api_token') ||
+    message.includes('upstash_redis_rest_url') ||
+    message.includes('upstash_redis_rest_token')
+  );
+}
+
+function handleRouteError(res, error, fallbackMessage) {
+  console.error(fallbackMessage, error);
+  if (isStorageConfigError(error)) {
+    return res.status(503).json({
+      status: 'error',
+      message: 'Storage is not configured. Add the Upstash Redis integration/env vars in Vercel.'
+    });
+  }
+  return res.status(500).json({ status: 'error', message: fallbackMessage });
+}
+
 // Authentication middleware
 function authenticateToken(req, res, next) {
   const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
@@ -157,8 +179,7 @@ app.post('/api/auth/register', async (req, res) => {
       message: 'User registered successfully. Please log in.' 
     });
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ status: 'error', message: 'Registration failed' });
+    return handleRouteError(res, error, 'Registration failed');
   }
 });
 
@@ -220,8 +241,7 @@ app.post('/api/auth/login', async (req, res) => {
       username: user.username
     });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ status: 'error', message: 'Login failed' });
+    return handleRouteError(res, error, 'Login failed');
   }
 });
 
@@ -255,8 +275,7 @@ app.get('/api/data', authenticateToken, async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error fetching data:', error);
-    res.status(500).json({ status: 'error', message: 'Failed to fetch data' });
+    return handleRouteError(res, error, 'Failed to fetch data');
   }
 });
 
@@ -287,8 +306,7 @@ app.post('/api/data', authenticateToken, async (req, res) => {
     
     res.json({ status: 'ok', message: 'Data saved successfully' });
   } catch (error) {
-    console.error('Error saving data:', error);
-    res.status(500).json({ status: 'error', message: 'Failed to save data' });
+    return handleRouteError(res, error, 'Failed to save data');
   }
 });
 
@@ -309,8 +327,7 @@ app.get('/api/export', authenticateToken, async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error exporting data:', error);
-    res.status(500).json({ status: 'error', message: 'Failed to export data' });
+    return handleRouteError(res, error, 'Failed to export data');
   }
 });
 
@@ -332,8 +349,7 @@ app.delete('/api/data', authenticateToken, async (req, res) => {
     
     res.json({ status: 'ok', message: 'Data deleted successfully' });
   } catch (error) {
-    console.error('Error deleting data:', error);
-    res.status(500).json({ status: 'error', message: 'Failed to delete data' });
+    return handleRouteError(res, error, 'Failed to delete data');
   }
 });
 
