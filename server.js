@@ -57,6 +57,15 @@ function authenticateToken(req, res, next) {
 
 // Public Routes
 
+// Auth page routes
+app.get('/auth', (req, res) => {
+  res.sendFile(path.join(__dirname, 'templates', 'auth.html'));
+});
+
+app.get('/auth.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'templates', 'auth.html'));
+});
+
 // Check if user is authenticated
 app.get('/api/auth/status', (req, res) => {
   const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
