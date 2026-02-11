@@ -1,5 +1,14 @@
 {
   "version": 2,
+  "functions": {
+    "server.js": {
+      "runtime": "nodejs20.x",
+      "includeFiles": [
+        "templates/**",
+        "static/**"
+      ]
+    }
+  },
   "builds": [
     {
       "src": "server.js",

@@ -3,10 +3,18 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 import { kv } from '@vercel/kv';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const cwd = process.cwd();
+const staticDir = fs.existsSync(path.join(cwd, 'static'))
+  ? path.join(cwd, 'static')
+  : path.join(__dirname, 'static');
+const templatesDir = fs.existsSync(path.join(cwd, 'templates'))
+  ? path.join(cwd, 'templates')
+  : path.join(__dirname, 'templates');
 const app = express();
 
 // Environment variables
@@ -17,7 +25,7 @@ const JWT_EXPIRY = '7d';
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'static')));
+app.use(express.static(staticDir));
 
 // Input validation helper
 function validateEmail(email) {
@@ -59,11 +67,11 @@ function authenticateToken(req, res, next) {
 
 // Auth page routes
 app.get('/auth', (req, res) => {
-  res.sendFile(path.join(__dirname, 'templates', 'auth.html'));
+  res.sendFile(path.join(templatesDir, 'auth.html'));
 });
 
 app.get('/auth.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'templates', 'auth.html'));
+  res.sendFile(path.join(templatesDir, 'auth.html'));
 });
 
 // Check if user is authenticated
@@ -227,7 +235,7 @@ app.post('/api/auth/logout', (req, res) => {
 
 // Main app page (redirect to login if not authenticated)
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'templates', 'index.html'));
+  res.sendFile(path.join(templatesDir, 'index.html'));
 });
 
 // Get user data (protected)
